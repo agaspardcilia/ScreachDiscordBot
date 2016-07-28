@@ -8,7 +8,6 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
 
 public class App {
-	private final static String token = "MjA4MzE2OTY2MTY1ODA3MTA1.CnwH0A.7P4N6Nk7aYhZ-uMwJbKTLeP2SsQ";
 
 
 	public static void main(String[] args) {
