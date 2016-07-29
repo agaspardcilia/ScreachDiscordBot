@@ -15,10 +15,6 @@ import sx.blah.discord.util.Image;
 import sx.blah.discord.util.RateLimitException;
 
 public class App {
-<<<<<<< HEAD
-=======
-
->>>>>>> branch 'master' of https://github.com/ScreachFr/ScreachDiscordBot.git
 
 	public static void main(String[] args) {
 		IDiscordClient bot;
