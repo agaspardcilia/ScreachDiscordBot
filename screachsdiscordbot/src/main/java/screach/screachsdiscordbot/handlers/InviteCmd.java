@@ -1,54 +1,53 @@
 package screach.screachsdiscordbot.handlers;
 
-import screach.screachsdiscordbot.listener.MainListener;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.util.BotInviteBuilder;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
-public class HelpCmd implements MessageHandler {
-	private MainListener ml;
+public class InviteCmd implements MessageHandler {
+	private IDiscordClient bot;
 	
-	public HelpCmd(MainListener ml) {
-		this.ml = ml;
+	public InviteCmd(IDiscordClient bot) {
+		this.bot = bot;
 	}
 	
-	
 	public String getName() {
-		return "Help";
+		return "Bot invitation";
 	}
 
 	public String getDescription() {
-		return "Displays commands usage.";
+		return "Generates an url to invite the bot to a server.";
 	}
 
 	public String getUsage() {
-		return "help";
+		return "invite";
 	}
 
 	public String getCommand() {
-		return "help";
+		return "invite";
 	}
 
 	public void handleMessage(MessageReceivedEvent event, String[] args) {
-		String result = "Help\n---------------\n";
-		result += "<argument> : required, [argument] : optionnal\n\n";
+		String result = "";
 		
-		for (MessageHandler mh : ml.getMsgHandlers()) {
-			result += mh.getUsage() + " : " + mh.getDescription() + "\n";
-		}
-		
-		result += "---------------\n";
+		result += new BotInviteBuilder(bot).build();
 		
 		try {
 			event.getMessage().getChannel().sendMessage(result);
 		} catch (RateLimitException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MissingPermissionsException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (DiscordException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 
 }
