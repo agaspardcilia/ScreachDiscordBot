@@ -44,7 +44,7 @@ public class ReadyHandler {
 		mListener.addMessageHandler(new HelpCmd(mListener));
 		mListener.addMessageHandler(new RollCmd());
 		mListener.addMessageHandler(new InviteCmd(bot));
-		mListener.addMessageHandler(new JukeBoxCmd());
+		mListener.addMessageHandler(new JukeBoxCmd(bot));
 	}
 	
 	
