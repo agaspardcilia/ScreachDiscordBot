@@ -1,10 +1,10 @@
-package screach.screachsdiscordbot.handlers;
+package screach.screachsdiscordbot.handlers.cmd;
 
+import screach.screachsdiscordbot.handlers.MessageHandler;
 import screach.screachsdiscordbot.listener.MainListener;
+import screach.screachsdiscordbot.util.MessageUtils;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
-import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
 
 public class HelpCmd implements MessageHandler {
 	private MainListener ml;
@@ -31,22 +31,17 @@ public class HelpCmd implements MessageHandler {
 	}
 
 	public void handleMessage(MessageReceivedEvent event, String[] args) {
-		String result = "Help\n---------------\n";
+		String result = "__**Help**__\n";
 		result += "<argument> : required, [argument] : optionnal\n\n";
 		
 		for (MessageHandler mh : ml.getMsgHandlers()) {
-			result += mh.getUsage() + " : " + mh.getDescription() + "\n";
+			result += "**" + mh.getUsage() + "** : " + mh.getDescription() + "\n";
 		}
 		
-		result += "---------------\n";
 		
 		try {
-			event.getMessage().getChannel().sendMessage(result);
-		} catch (RateLimitException e) {
-			e.printStackTrace();
+			MessageUtils.sendMessage(event.getMessage().getChannel(), result);
 		} catch (MissingPermissionsException e) {
-			e.printStackTrace();
-		} catch (DiscordException e) {
 			e.printStackTrace();
 		}
 	}

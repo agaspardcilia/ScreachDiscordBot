@@ -1,10 +1,5 @@
 package screach.screachsdiscordbot;
 
-import screach.screachsdiscordbot.handlers.HelpCmd;
-import screach.screachsdiscordbot.handlers.InviteCmd;
-import screach.screachsdiscordbot.handlers.ParrotCmd;
-import screach.screachsdiscordbot.handlers.RollCmd;
-import screach.screachsdiscordbot.handlers.jukebox.JukeBoxCmd;
 import screach.screachsdiscordbot.listener.MainListener;
 import screach.screachsdiscordbot.util.FailedToLoadSettingsException;
 import screach.screachsdiscordbot.util.Settings;
@@ -21,7 +16,8 @@ public class App {
 		IDiscordClient bot;
 		MainListener mListener;
 		String token;
-		boolean setupBot = false;
+		
+		
 		
 		try {
 			Settings.init();
@@ -34,33 +30,14 @@ public class App {
 		
 		try {
 			token = Settings.crtInstance.getValue("token");
-			
-			
 			bot = getClient(token);
-			while(!bot.isReady());
-			
-			setupBot = Boolean.parseBoolean(Settings.crtInstance.getValue("setupbot"));
-			
-			if (setupBot) {
-				System.out.println("Performing bot setup...");
-				setupBot(bot);
-				System.out.println("Bot setup finished.");
-			}
 			
 			mListener = new MainListener();
-
-			mListener.addMessageHandler(new ParrotCmd());
-			mListener.addMessageHandler(new HelpCmd(mListener));
-			mListener.addMessageHandler(new RollCmd());
-			mListener.addMessageHandler(new InviteCmd(bot));
-			mListener.addMessageHandler(new JukeBoxCmd());
-			
 			bot.getDispatcher().registerListener(mListener);
+			
 			
 
 		} catch (DiscordException e) {
-			e.printStackTrace();
-		} catch (RateLimitException e) {
 			e.printStackTrace();
 		}
 
@@ -90,6 +67,10 @@ public class App {
 		bot.changeEmail(email);
 	    bot.changeAvatar(img);
 		
+		
+	}
+	
+	public static void init() {
 		
 	}
 

@@ -3,9 +3,11 @@ package screach.screachsdiscordbot.listener;
 import java.util.ArrayList;
 
 import screach.screachsdiscordbot.handlers.MessageHandler;
+import screach.screachsdiscordbot.handlers.ReadyHandler;
 import sx.blah.discord.api.events.Event;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -15,9 +17,11 @@ public class MainListener implements IListener<Event> {
 	private final static char cmdSymbole = '!';
 
 	private ArrayList<MessageHandler> msgHandlers;
-
+	private ReadyHandler readyHandler;
+	
 	public MainListener() {
 		msgHandlers = new ArrayList<MessageHandler>();
+		readyHandler = new ReadyHandler(this);
 	}
 
 
@@ -29,7 +33,9 @@ public class MainListener implements IListener<Event> {
 		try {
 			if (event instanceof MessageReceivedEvent)
 				handleMessage((MessageReceivedEvent) event);
-		
+			else if (event instanceof ReadyEvent)
+				readyHandler.setup((ReadyEvent) event);
+
 		} catch (RateLimitException e) {
 			e.printStackTrace();
 		} catch (MissingPermissionsException e) {

@@ -1,5 +1,7 @@
-package screach.screachsdiscordbot.handlers;
+package screach.screachsdiscordbot.handlers.cmd;
 
+import screach.screachsdiscordbot.handlers.MessageHandler;
+import screach.screachsdiscordbot.util.MessageUtils;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -33,12 +35,8 @@ public class ParrotCmd implements MessageHandler {
 		
 		
 		try {
-			event.getMessage().getChannel().sendMessage(result);
-		} catch (RateLimitException e) {
-			e.printStackTrace();
+			MessageUtils.sendMessage(event.getMessage().getChannel(), result);
 		} catch (MissingPermissionsException e) {
-			e.printStackTrace();
-		} catch (DiscordException e) {
 			e.printStackTrace();
 		}
 	}

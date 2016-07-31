@@ -1,5 +1,7 @@
-package screach.screachsdiscordbot.handlers;
+package screach.screachsdiscordbot.handlers.cmd;
 
+import screach.screachsdiscordbot.handlers.MessageHandler;
+import screach.screachsdiscordbot.util.MessageUtils;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.util.BotInviteBuilder;
@@ -36,15 +38,8 @@ public class InviteCmd implements MessageHandler {
 		result += new BotInviteBuilder(bot).build();
 		
 		try {
-			event.getMessage().getChannel().sendMessage(result);
-		} catch (RateLimitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageUtils.sendMessage(event.getMessage().getChannel(), result);
 		} catch (MissingPermissionsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DiscordException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
