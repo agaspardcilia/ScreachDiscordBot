@@ -43,33 +43,34 @@ public class JukeBoxCmd  implements MessageHandler {
 
 	private IDiscordClient bot;
 	private ArrayList<AudioPlayer> audioPlayers;
-	private ArrayList<IVoiceChannel> voiceChannels;
-	private ArrayList<String> extTrack;
 
 	public JukeBoxCmd(IDiscordClient bot) {
 		audioPlayers = new ArrayList<>();
-		voiceChannels= new ArrayList<>();
-		extTrack = new ArrayList<>();
 		this.bot = bot;
 		isEnabled = false;
 	}
-
+	
+	@Override
 	public String getName() {
 		return "Jukebox";
 	}
-
+	
+	@Override
 	public String getDescription() {
 		return "Jukebox controls.";
 	}
 
+	@Override
 	public String getUsage() {
 		return "jb <command> [args]";
 	}
 
+	@Override
 	public String getCommand() {
 		return "jb";
 	}
-
+	
+	@Override
 	public void handleMessage(MessageReceivedEvent event, String[] args) {
 		String result = "";
 		String cmd;
@@ -113,6 +114,9 @@ public class JukeBoxCmd  implements MessageHandler {
 			case "add":
 				result += addTrack(event, args);
 				break;
+			case "current":
+				result += currentTrack(event);
+				break;
 			default:
 				result += getJbError("Unkown command \"" + cmd + "\"(type \"!jb help\" the list of available commands)");
 				break;
@@ -126,15 +130,19 @@ public class JukeBoxCmd  implements MessageHandler {
 		}
 	}
 
-
+	/**
+	 * This method returns an error notice.
+	 * @param notice Message to display.
+	 * @return Error message.
+	 */
 	private String getJbError(String notice) {
 		return "Jukebox error : " + notice;
 	}
 
-	private String getAck() {
-		return "Jukebox Ack.";
-	}
-
+	/**
+	 * This method returns the help.
+	 * @return Help string.
+	 */
 	private String getHelpAnswer() {
 		String result = "__**Jukebox help**__\n";
 		result += "<argument> : required, [argument] : optionnal\n\n";
@@ -150,11 +158,16 @@ public class JukeBoxCmd  implements MessageHandler {
 		result += "**current**, display current song.\n";
 		result += "**next**, displays next song.\n";
 		result += "**vol <0-100>**, sets volume.\n";
-		result += "**add <track's url>**, add a track.\n";
+		result += "**add <track's url>**, add a track to playlist.\n";
 
 		return result;
 	}
 
+	/**
+	 * This method returns the list of music in playlist.
+	 * @param event Command's event.
+	 * @return List of playlist tracks.
+	 */
 	private String getListAnswer(MessageReceivedEvent event) {
 		String result = "__**Jukebox music list**__\n";
 		IGuild guild = event.getMessage().getGuild();
@@ -172,9 +185,16 @@ public class JukeBoxCmd  implements MessageHandler {
 		return result;
 	}
 
+	/**
+	 * This method loads tracks in playlist and make the bot join the jukebox voice channel.
+	 * @param event Command's event.
+	 * @return Command answer.
+	 */
 	private String enableJukebox(MessageReceivedEvent event) {
+		//Check if the jukebox is already enable.
 		if (isEnabled)
 			return "The jukebox is already enabled.";
+		
 		String voiceChannelName = Settings.crtInstance.getValue("musicchannel");
 		IVoiceChannel voiceChannel;
 		String result = "";
@@ -182,31 +202,33 @@ public class JukeBoxCmd  implements MessageHandler {
 		AudioPlayer player = null;
 		List<IVoiceChannel> voices;
 
-		int extTrack = 0, localTracks = 0;
+		int extTrack = 0, localTracks = 0; //Track count.
 
 		guild = event.getMessage().getGuild();
 		voices = guild.getVoiceChannelsByName(voiceChannelName);
-
+		
+		//Check if the jukebox voice channel exists. Otherwise, it creates a new channel.
 		if (voices.size() == 0) {
 			try {
 				voiceChannel = guild.createVoiceChannel(voiceChannelName);
 			} catch (RateLimitException | DiscordException | MissingPermissionsException e1) {
-				return "Jukebox error : cannot create jukebox channel (" + e1.getMessage() + ").";
+				return getJbError("cannot create jukebox channel (" + e1.getMessage() + ").");
 			}
 		} else {
 			voiceChannel = voices.get(0);
 		}
 
+		//Join the jukebox channel.
 		try {
 			voiceChannel.join();
 		} catch (MissingPermissionsException e1) {
-			return "Jukebox error : cannot join the jukebox channel (" + e1.getMessage() + ").";
+			return getJbError("cannot join the jukebox channel (" + e1.getMessage() + ").");
 		}
 
 
 		player = getAudioPlayer(guild);
 
-
+		//Loads the local tracks.
 		for (File f : getMusicList()) {
 			try {
 				player.queue(f);
@@ -217,7 +239,8 @@ public class JukeBoxCmd  implements MessageHandler {
 				e.printStackTrace();
 			}
 		}
-
+		
+		//Loads external tracks.
 		try {
 			ArrayList<String> extTracks = loadExtTracksUrls();
 
@@ -235,25 +258,34 @@ public class JukeBoxCmd  implements MessageHandler {
 			System.err.println("Can't load external tracks file.");
 			e.printStackTrace();
 		}
-
+		
+		//Setup player.
 		player.setPaused(true);
 		player.setVolume(Float.parseFloat(Settings.crtInstance.getValue("vol")));
 		player.setLoop(true);
+		
+		//Creates answer.
 		result += "Jukebox enabled.\n";
-		result += (extTrack + localTracks) + " tracks in playlist (" + localTracks + " locals, " + extTrack + " externals).\n";
-		result += "Now playing : **" + getTrackName(player.getCurrentTrack()) + "**";
+		result += (extTrack + localTracks) + " tracks in playlist (" + localTracks + " local, " + extTrack + " external).\n";
+		result += "Current song : **" + getTrackName(player.getCurrentTrack()) + "**";
 
 		isEnabled = true;
 
 		return result;
 	}
 
+	/**
+	 * This method disables the jukebox.
+	 * @param event Command's event.
+	 * @return Command answer.
+	 */
 	private String disableJukebox(MessageReceivedEvent event) {
 		IGuild guild = event.getMessage().getGuild();
 		AudioPlayer player = getAudioPlayer(guild);
 
 		player.setPaused(true);
 		player.clear();
+		//Find the right voice channel.
 		for (IVoiceChannel chan : bot.getConnectedVoiceChannels()) {
 			if (chan.getGuild().equals(guild))
 				chan.leave();
@@ -263,7 +295,11 @@ public class JukeBoxCmd  implements MessageHandler {
 		return "Jukebox is now disabled.";
 	}
 
-
+	/**
+	 * This method skips the current track.
+	 * @param event Command's event.
+	 * @return Command answer.
+	 */
 	private String skip(MessageReceivedEvent event) {
 		AudioPlayer player = getAudioPlayer(event.getMessage().getGuild());
 
@@ -272,9 +308,16 @@ public class JukeBoxCmd  implements MessageHandler {
 		return "Now playing : **" + getTrackName(player.getCurrentTrack()) + "**";
 	}
 
+	/**
+	 * This method play the current song or skips to the given track.
+	 * @param event Command's event.
+	 * @param args Command's arguments.
+	 * @return Command answer.
+	 */
 	private String play(MessageReceivedEvent event, String[] args) {
+		//Check if the jukebox is enable.
 		if (!isEnabled) {
-			return "Jukebox error : use \"enable\" first.";
+			return getJbError(" use \"enable\" first.");
 		}
 
 		String result = "";
@@ -283,13 +326,13 @@ public class JukeBoxCmd  implements MessageHandler {
 
 		player.setPaused(false);
 
-
+		//Check argument validity and switch to the given track.
 		if (args.length >= 3) {
 			try {
 				track = Integer.parseInt(args[2]);
 				player.skipTo(track%player.getPlaylistSize());
 			} catch (NumberFormatException e) {
-				result += "Jukebox error : Unkown argument \"" + args[2] + "\"";
+				result += getJbError("Unkown argument \"" + args[2] + "\"");
 			}
 
 		}
@@ -299,9 +342,14 @@ public class JukeBoxCmd  implements MessageHandler {
 		return result;
 	}
 
+	/**
+	 * This method returns the given guild AudioPlayer.
+	 * @param guild Guild
+	 * @return Guild AudioPlayer.
+	 */
 	private AudioPlayer getAudioPlayer(IGuild guild) {
 		AudioPlayer result = null;
-
+		
 		for (AudioPlayer audioPlayer : audioPlayers) {
 			if (audioPlayer.getGuild().equals(guild))
 				result = audioPlayer; 
@@ -315,6 +363,10 @@ public class JukeBoxCmd  implements MessageHandler {
 		return result;
 	}
 
+	/**
+	 * This method returns all the supported audio files specified in the music folder.
+	 * @return List of supported audio files.
+	 */
 	private File[] getMusicList() {
 		ArrayList<File> tmp = new ArrayList<>();
 		File[] result;
@@ -340,6 +392,11 @@ public class JukeBoxCmd  implements MessageHandler {
 		return result;
 	}
 
+	/**
+	 * This method check if the given extension is known as a supported audio format.
+	 * @param format File extension.
+	 * @return true = supported, false = unsupported.
+	 */
 	private boolean isFormatSupported(String format) {
 		boolean result = false;
 
@@ -351,6 +408,11 @@ public class JukeBoxCmd  implements MessageHandler {
 		return result;
 	}
 
+	/**
+	 * This method looks the track metadata and returns a formated track name.
+	 * @param track Track who needs a name.
+	 * @return Track name.
+	 */
 	private String getTrackName(Track track) {
 		String result;
 		String filename = null;
@@ -367,6 +429,12 @@ public class JukeBoxCmd  implements MessageHandler {
 		return result;
 	}
 
+	/**
+	 * This method set the given guild AudioPlayer volume.
+	 * @param event Command's event.
+	 * @param args Command's arguments.
+	 * @return Command answer.
+	 */
 	private String setVolume(MessageReceivedEvent event, String[] args) {
 		String result = "";
 		AudioPlayer player = getAudioPlayer(event.getMessage().getGuild());
@@ -382,22 +450,32 @@ public class JukeBoxCmd  implements MessageHandler {
 					result += "Jukebox error : invalid volume value \"" + volume + "\". This value must be between 0 and 100.";
 				}
 			} catch (NumberFormatException e) {
-				result += "Jukebox error : Unkown argument \"" + args[2] + "\"";
+				result += getJbError("Unkown argument \"" + args[2] + "\"");
 			}
 
 		} else {
-			result += "Jukebox error : Desired volume missing.";
+			result += getJbError("Desired volume missing.");
 		}
 
 
 		return result;
 	}
 
+	/**
+	 * Pause the given guild jukebox.
+	 * @param event Command's event.
+	 * @return Command answer.
+	 */
 	private String pause(MessageReceivedEvent event) {
 		getAudioPlayer(event.getMessage().getGuild()).setPaused(true);
 		return "The jukebox is now paused.";
 	}
 
+	/**
+	 * This method switches the bot to the client's voice channel that requested that command.
+	 * @param event Command's envent.
+	 * @return Command answer.
+	 */
 	private String summon(MessageReceivedEvent event) {
 		IGuild guild = event.getMessage().getGuild();
 		List<IVoiceChannel> voices;
@@ -413,19 +491,24 @@ public class JukeBoxCmd  implements MessageHandler {
 		}
 
 		if (voice == null)
-			return "Jukebox error : You must be connected to a voice channel to do that.";
+			return getJbError("You must be connected to a voice channel to do that.");
 
 
 		try {
 			voice.join();
 		} catch (MissingPermissionsException e) {
-			return "Jukebox error : I don't have the permission to do that.";
+			return getJbError("I don't have the permission to do that.");
 		}
 
 		return "The jukebox is moving...";
 
 	}
 
+	/**
+	 * This method switch back the bot to the jukebox channel.
+	 * @param event Command event.
+	 * @return Command answer.
+	 */
 	private String revoke(MessageReceivedEvent event) {
 		String voiceChannelName = Settings.crtInstance.getValue("musicchannel");
 		IVoiceChannel voiceChannel;
@@ -436,7 +519,7 @@ public class JukeBoxCmd  implements MessageHandler {
 			try {
 				voiceChannel = guild.createVoiceChannel(voiceChannelName);
 			} catch (RateLimitException | DiscordException | MissingPermissionsException e1) {
-				return "Jukebox error : cannot create jukebox channel (" + e1.getMessage() + ").";
+				return getJbError("Cannot create jukebox channel (" + e1.getMessage() + ").");
 			}
 		} else {
 			voiceChannel = voices.get(0);
@@ -445,12 +528,17 @@ public class JukeBoxCmd  implements MessageHandler {
 		try {
 			voiceChannel.join();
 		} catch (MissingPermissionsException e1) {
-			return "Jukebox error : cannot join the jukebox channel (" + e1.getMessage() + ").";
+			return getJbError("Cannot join the jukebox channel (" + e1.getMessage() + ").");
 		}
 		return "The jukebox is going back to " + voiceChannelName + ".";
 	}
 
-	public ArrayList<String> loadExtTracksUrls() throws FailedToLoadSettingsException {
+	/**
+	 * This method loads external tracks urls.
+	 * @return List of Url in the external track file.
+	 * @throws FailedToLoadSettingsException Can't load external track file.
+	 */
+	private ArrayList<String> loadExtTracksUrls() throws FailedToLoadSettingsException {
 		ArrayList<String> result = new ArrayList<>();
 		File trackFile;
 		Scanner sc;
@@ -467,13 +555,19 @@ public class JukeBoxCmd  implements MessageHandler {
 			sc.close();
 
 		} catch (FileNotFoundException e) {
-			throw new FailedToLoadSettingsException("Jukebox error : Failed to load external track list file");
+			throw new FailedToLoadSettingsException(getJbError("Failed to load external track list file"));
 		}
 
 
 		return result;
 	}
-
+	
+	/**
+	 * This method adds a track by it's given url.
+	 * @param event Command's event.
+	 * @param args Command's arguments.
+	 * @return Command answer.
+	 */
 	private String addTrack(MessageReceivedEvent event, String[] args) {
 		String result = "";
 		AudioPlayer player = getAudioPlayer(event.getMessage().getGuild());
@@ -489,20 +583,24 @@ public class JukeBoxCmd  implements MessageHandler {
 					addUrlToExtTrackFile(trackUrl.toString());
 					result += getTrackName(track) + "has been added to playlist";
 				} catch (IOException | UnsupportedAudioFileException e) {
-					return "Jukebox error : problem when adding track to playlist. " + e.getMessage();
+					return getJbError("Problem when adding track to playlist. " + e.getMessage());
 				}
 				
 			} catch (MalformedURLException e) {
-				return "Jukebox error : Malformed URL.";
+				return getJbError("Malformed URL.");
 			}
 		} else {
-			result += "Jukebox error : no argument.";
+			result += getJbError("No argument.");
 		}
 
 
 		return result;
 	}
 
+	/**
+	 * This method adds an entry in the external tracks file.
+	 * @param url Entry to add.
+	 */
 	private void addUrlToExtTrackFile(String url) {
 		File trackFile;
 		PrintWriter printer;
@@ -518,27 +616,30 @@ public class JukeBoxCmd  implements MessageHandler {
 		
 	}
 	
-	//		public static void main(String[] args) {
-	//			JukeBoxCmd jb = new JukeBoxCmd(null);
-	//			try {
-	//				Settings.init();
-	//			} catch (FailedToLoadSettingsException e1) {
-	//				// TODO Auto-generated catch block
-	//				e1.printStackTrace();
-	//			}
-	//			try {
-	//				ArrayList<String> tracks = jb.loadExtTracksUrls();
-	//				
-	//				for (String string : tracks) {
-	//					System.out.println(string);
-	//				}
-	//				
-	//				
-	//			} catch (FailedToLoadSettingsException e) {
-	//				// TODO Auto-generated catch block
-	//				e.printStackTrace();
-	//			}
-	//		
-	//		}
-
+	/**
+	 * This method returns the current playing track.
+	 * @param event Command's event.
+	 * @return Command answer.
+	 */
+	private String currentTrack(MessageReceivedEvent event) {
+		AudioPlayer player = getAudioPlayer(event.getMessage().getGuild());
+		String result = "";
+		Track track = null;
+		
+		
+		if (!isEnabled) {
+			return getJbError("Use \"enable\" command first.");
+		}
+		
+		track = player.getCurrentTrack();
+		
+		if (track == null) {
+			result += "No selected track.";
+		} else {
+			result += "Now playing **" + getTrackName(track) + "**";
+		}
+		
+		return result;
+	}
+	
 }
