@@ -2,13 +2,16 @@ package screach.screachsdiscordbot.handlers;
 
 import screach.screachsdiscordbot.handlers.cmd.HelpCmd;
 import screach.screachsdiscordbot.handlers.cmd.InviteCmd;
-import screach.screachsdiscordbot.handlers.cmd.ParrotCmd;
+import screach.screachsdiscordbot.App;
+import screach.screachsdiscordbot.handlers.cmd.ChatterBotCmd;
 import screach.screachsdiscordbot.handlers.cmd.RollCmd;
 import screach.screachsdiscordbot.handlers.cmd.jukebox.JukeBoxCmd;
 import screach.screachsdiscordbot.listener.MainListener;
 import screach.screachsdiscordbot.util.Settings;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.RateLimitException;
 
 public class ReadyHandler {
 	private MainListener mListener;
@@ -34,13 +37,19 @@ public class ReadyHandler {
 		
 		if (setupBot) {
 			System.out.println("Performing bot setup...");
-			setupBot(bot);
-			System.out.println("Bot setup finished.");
+			try {
+				App.setupBot(bot);
+				System.out.println("Bot setup finished.");
+			} catch (RateLimitException e) {
+				e.printStackTrace();
+			} catch (DiscordException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	public void setupMessageListeners(IDiscordClient bot) {
-		mListener.addMessageHandler(new ParrotCmd());
+		mListener.addMessageHandler(new ChatterBotCmd());
 		mListener.addMessageHandler(new HelpCmd(mListener));
 		mListener.addMessageHandler(new RollCmd());
 		mListener.addMessageHandler(new InviteCmd(bot));

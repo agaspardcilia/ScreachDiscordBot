@@ -2,24 +2,17 @@ package screach.screachsdiscordbot.handlers.cmd.jukebox;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.Map.Entry;
 import java.util.Scanner;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.ls.LSInput;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 import screach.screachsdiscordbot.handlers.MessageHandler;
 import screach.screachsdiscordbot.util.FailedToLoadSettingsException;

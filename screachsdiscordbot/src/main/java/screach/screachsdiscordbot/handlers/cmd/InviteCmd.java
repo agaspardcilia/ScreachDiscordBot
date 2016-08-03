@@ -5,9 +5,7 @@ import screach.screachsdiscordbot.util.MessageUtils;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.util.BotInviteBuilder;
-import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
 
 public class InviteCmd implements MessageHandler {
 	private IDiscordClient bot;

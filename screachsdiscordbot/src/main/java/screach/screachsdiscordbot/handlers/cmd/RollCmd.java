@@ -1,14 +1,11 @@
 package screach.screachsdiscordbot.handlers.cmd;
 
-import java.text.ParseException;
 import java.util.Random;
 
 import screach.screachsdiscordbot.handlers.MessageHandler;
 import screach.screachsdiscordbot.util.MessageUtils;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
-import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
 
 public class RollCmd implements MessageHandler {
 	private final static int DEFAULT_MAX = 100;

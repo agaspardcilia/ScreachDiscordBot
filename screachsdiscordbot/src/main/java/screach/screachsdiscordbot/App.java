@@ -1,5 +1,7 @@
 package screach.screachsdiscordbot;
 
+import org.apache.commons.io.FilenameUtils;
+
 import screach.screachsdiscordbot.listener.MainListener;
 import screach.screachsdiscordbot.util.FailedToLoadSettingsException;
 import screach.screachsdiscordbot.util.Settings;
@@ -61,7 +63,7 @@ public class App {
 		avatar = Settings.crtInstance.getValue("botimage");
 		status = Status.game(Settings.crtInstance.getValue("botstatus"));
 		email = Settings.crtInstance.getValue("botemail");
-		img = Image.forUrl("png", avatar);
+		img = Image.forUrl(FilenameUtils.getExtension(avatar), avatar);
 		
 		bot.changeStatus(status);
 		bot.changeEmail(email);
