@@ -3,6 +3,7 @@ package screach.screachsdiscordbot;
 import org.apache.commons.io.FilenameUtils;
 
 import screach.screachsdiscordbot.listener.MainListener;
+import screach.screachsdiscordbot.util.Debug;
 import screach.screachsdiscordbot.util.FailedToLoadSettingsException;
 import screach.screachsdiscordbot.util.Settings;
 import sx.blah.discord.api.ClientBuilder;
@@ -23,6 +24,7 @@ public class App {
 		
 		try {
 			Settings.init();
+			Debug.init();
 			System.out.println("Settings loaded.");
 		} catch (FailedToLoadSettingsException e1) {
 			System.err.println("Failed to load settings : " + e1.getNotice());

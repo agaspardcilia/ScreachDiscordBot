@@ -6,17 +6,14 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Scanner;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 
 public class Settings {
 	private final static String CFG_FILE_PATH = "botcfg.json";
 	
-	private final static String ERR_FILE_NOT_FOUND = "Error : File not found";
+	private final static String ERR_FILE_NOT_FOUND = "Error : File not found.";
 	
 	
 	public static Settings crtInstance;
@@ -53,7 +50,7 @@ public class Settings {
 			
 			
 		} catch (FileNotFoundException e) {
-			throw new FailedToLoadSettingsException(ERR_FILE_NOT_FOUND);
+			throw new FailedToLoadSettingsException(ERR_FILE_NOT_FOUND + "(" + CFG_FILE_PATH + ")");
 		}
 	}
 	

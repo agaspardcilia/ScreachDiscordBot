@@ -18,5 +18,15 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/alexandre/.m2/repository/com/github/austinv11/Discord4j/dev-2.5.2-g0da0b83-4/Discord4j-dev-2.5.2-g0da0b83-4.jar" sourcepath="/home/alexandre/.m2/repository/com/github/austinv11/Discord4j/dev-2.5.2-g0da0b83-4/Discord4j-dev-2.5.2-g0da0b83-4-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="javadoc_location" value="jar:file:/home/alexandre/.m2/repository/com/github/austinv11/Discord4j/dev-2.5.2-g0da0b83-4/Discord4j-dev-2.5.2-g0da0b83-4-javadoc.jar!/"/>
+			<attribute name="maven.groupId" value="com.github.austinv11"/>
+			<attribute name="maven.artifactId" value="Discord4j"/>
+			<attribute name="maven.version" value="dev-2.5.2-g0da0b83-4"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

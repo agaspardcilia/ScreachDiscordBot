@@ -6,6 +6,7 @@ import screach.screachsdiscordbot.App;
 import screach.screachsdiscordbot.handlers.cmd.ChatterBotCmd;
 import screach.screachsdiscordbot.handlers.cmd.RollCmd;
 import screach.screachsdiscordbot.handlers.cmd.jukebox.JukeBoxCmd;
+import screach.screachsdiscordbot.handlers.presencechangehandler.RoleManagerHandler;
 import screach.screachsdiscordbot.listener.MainListener;
 import screach.screachsdiscordbot.util.Settings;
 import sx.blah.discord.api.IDiscordClient;
@@ -26,6 +27,7 @@ public class ReadyHandler {
 		System.out.println("The bot is starting...");
 		setupBot(bot);
 		setupMessageListeners(bot);
+		setupPresenceListeners();
 		System.out.println("The bot is ready.");
 		
 	}
@@ -54,6 +56,10 @@ public class ReadyHandler {
 		mListener.addMessageHandler(new RollCmd());
 		mListener.addMessageHandler(new InviteCmd(bot));
 		mListener.addMessageHandler(new JukeBoxCmd(bot));
+	}
+	
+	public void setupPresenceListeners() {
+		mListener.addPresenceUpdateHandler(new RoleManagerHandler());
 	}
 	
 	
