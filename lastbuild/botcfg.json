@@ -1,0 +1,22 @@
+{
+	"debug" : true,
+
+	"token" : "PUT YOUR KEY HERE",
+
+	"musicpath" : "~/Music",
+	"tmpmusicpath" : "~/Music/tmp",
+	"songlistfile" : "songList.data",
+	"musicchannel" : "Jukebox",
+	"vol" : "0.2",
+
+
+	"setupbot" : false,
+	"botimage" : "https://pbs.twimg.com/profile_images/2161122337/bender.jpg",
+	"botstatus" : "Type \"!help\" to see a list of available commands.",
+	"botemail" : "a.gaspardcilia@gmail.com",
+
+
+	"dftrole" : "Guest"
+}
+
+
