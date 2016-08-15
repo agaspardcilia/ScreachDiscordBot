@@ -1,13 +1,11 @@
 package screach.screachsdiscordbot.handlers.presencechangehandler;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import screach.screachsdiscordbot.handlers.PresenceUpdateHandler;
 import screach.screachsdiscordbot.util.Debug;
 import screach.screachsdiscordbot.util.Settings;
-import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IRole;
@@ -30,6 +28,7 @@ public class RoleManagerHandler implements PresenceUpdateHandler {
 
 	@Override
 	public void handle(PresenceUpdateEvent event) {
+		@SuppressWarnings("deprecation")
 		IGuild currentGuild = event.getGuild();
 		IUser user;
 		List<IRole> roles;

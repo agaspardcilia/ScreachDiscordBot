@@ -46,8 +46,8 @@ public class MainListener implements IListener<Event> {
 				readyHandler.setup((ReadyEvent) event);
 			else if (event instanceof PresenceUpdateEvent)
 				handlePresence((PresenceUpdateEvent) event);
-			else
-				Debug.println("Unhandled event :" + event.toString());
+//			else
+//				Debug.println("Unhandled event :" + event.toString());
 				
 		} catch (RateLimitException e) {
 			e.printStackTrace();

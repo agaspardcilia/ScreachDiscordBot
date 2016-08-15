@@ -55,24 +55,7 @@ public class App {
 		return new ClientBuilder().withToken(token).login();
 	}    
 
-	public static void setupBot(IDiscordClient bot) throws RateLimitException, DiscordException {
-		Status status;
-		String email;
-		String avatar;
-		Image img;
-		
-		
-		avatar = Settings.crtInstance.getValue("botimage");
-		status = Status.game(Settings.crtInstance.getValue("botstatus"));
-		email = Settings.crtInstance.getValue("botemail");
-		img = Image.forUrl(FilenameUtils.getExtension(avatar), avatar);
-		
-		bot.changeStatus(status);
-		bot.changeEmail(email);
-	    bot.changeAvatar(img);
-		
-		
-	}
+	
 	
 	public static void init() {
 		

@@ -9,6 +9,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -36,11 +38,14 @@ public class JukeBoxCmd  implements MessageHandler {
 
 	private IDiscordClient bot;
 	private ArrayList<AudioPlayer> audioPlayers;
+	
+	private Executor executor;
 
 	public JukeBoxCmd(IDiscordClient bot) {
 		audioPlayers = new ArrayList<>();
 		this.bot = bot;
 		isEnabled = false;
+		executor = Executors.newSingleThreadExecutor();
 	}
 	
 	@Override
@@ -195,7 +200,7 @@ public class JukeBoxCmd  implements MessageHandler {
 		AudioPlayer player = null;
 		List<IVoiceChannel> voices;
 
-		int extTrack = 0, localTracks = 0; //Track count.
+		int localTracks = 0; //Track count.
 
 		guild = event.getMessage().getGuild();
 		voices = guild.getVoiceChannelsByName(voiceChannelName);
@@ -233,25 +238,6 @@ public class JukeBoxCmd  implements MessageHandler {
 			}
 		}
 		
-		//Loads external tracks.
-		try {
-			ArrayList<String> extTracks = loadExtTracksUrls();
-
-			for (String crt : extTracks) {
-				try {
-					player.queue(new URL(crt));
-					extTrack++;
-				} catch (IOException | UnsupportedAudioFileException e) {
-					System.err.println("Can't load " + crt + ".");
-					e.printStackTrace();
-				}
-			}
-
-		} catch (FailedToLoadSettingsException e) {
-			System.err.println("Can't load external tracks file.");
-			e.printStackTrace();
-		}
-		
 		//Setup player.
 		player.setPaused(true);
 		player.setVolume(Float.parseFloat(Settings.crtInstance.getValue("vol")));
@@ -259,7 +245,7 @@ public class JukeBoxCmd  implements MessageHandler {
 		
 		//Creates answer.
 		result += "Jukebox enabled.\n";
-		result += (extTrack + localTracks) + " tracks in playlist (" + localTracks + " local, " + extTrack + " external).\n";
+		result += localTracks + " tracks in playlist.\n";
 		result += "Current song : **" + getTrackName(player.getCurrentTrack()) + "**";
 
 		isEnabled = true;
@@ -556,31 +542,35 @@ public class JukeBoxCmd  implements MessageHandler {
 	}
 	
 	/**
-	 * This method adds a track by it's given url.
+	 * This method adds a track by it's given Youtube url.
 	 * @param event Command's event.
 	 * @param args Command's arguments.
 	 * @return Command answer.
 	 */
 	private String addTrack(MessageReceivedEvent event, String[] args) {
+		if (!isEnabled)
+			return getJbError("Use !enable first.");
+		
 		String result = "";
 		AudioPlayer player = getAudioPlayer(event.getMessage().getGuild());
 		URL trackUrl;
-		Track track;
+		YoutubeAudioTrack converter;
+		
 		
 		if (args.length >= 3) {
 			try {
 				trackUrl = new URL(args[2]);
 				
-				try {
-					track = player.queue(trackUrl);
-					addUrlToExtTrackFile(trackUrl.toString());
-					result += getTrackName(track) + "has been added to playlist";
-				} catch (IOException | UnsupportedAudioFileException e) {
-					return getJbError("Problem when adding track to playlist. " + e.getMessage());
-				}
+				converter = new YoutubeAudioTrack(trackUrl, player);
+				
+				executor.execute(converter);
+				
+				result += "This track will be added as soon as the video is downloaded and converted.";
 				
 			} catch (MalformedURLException e) {
 				return getJbError("Malformed URL.");
+			} catch (InvalidYoutubeURL e) {
+				return getJbError("This is not a correct Youtube url.");
 			}
 		} else {
 			result += getJbError("No argument.");
@@ -590,25 +580,6 @@ public class JukeBoxCmd  implements MessageHandler {
 		return result;
 	}
 
-	/**
-	 * This method adds an entry in the external tracks file.
-	 * @param url Entry to add.
-	 */
-	private void addUrlToExtTrackFile(String url) {
-		File trackFile;
-		PrintWriter printer;
-		
-		trackFile = new File(Settings.crtInstance.getValue("songlistfile"));
-		try {
-			printer = new PrintWriter(trackFile);
-			printer.println(url);
-			printer.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
 	/**
 	 * This method returns the current playing track.
 	 * @param event Command's event.
