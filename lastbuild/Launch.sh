@@ -1,12 +1,14 @@
 # !/bin/bash
 
+jar="$HOME/screachdiscordbot/screachdiscordbot.jar"
+
 #Check if the jar exists.
-if [ -f "~/screachdiscordbot/screachdiscordbot.jar" ];
+if [ -f $jar ];
 then
 	echo "Launching Screach's Discord Bot..."
-	java -jar ~/screachdiscordbot/screachdiscordbot.jar
+	java -jar $jar
 else
-	echo "Error : ~/screachdiscordbot/screachsdiscordbot.jar not found."
+	echo "Error : $jar not found."
 fi
 
 
