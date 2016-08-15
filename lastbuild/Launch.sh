@@ -1,7 +1,7 @@
 # !/bin/bash
 
 #Check if the jar exists.
-if [ -f "~/screachdiscordbot/screachsdiscordbot.jar" ];
+if [ -f "~/screachdiscordbot/screachdiscordbot.jar" ];
 then
 	echo "Launching Screach's Discord Bot..."
 	java -jar ~/screachdiscordbot/screachdiscordbot.jar
