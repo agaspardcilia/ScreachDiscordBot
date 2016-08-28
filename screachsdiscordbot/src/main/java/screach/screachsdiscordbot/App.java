@@ -1,6 +1,5 @@
 package screach.screachsdiscordbot;
 
-import org.apache.commons.io.FilenameUtils;
 
 import screach.screachsdiscordbot.listener.MainListener;
 import screach.screachsdiscordbot.util.Debug;
@@ -8,10 +7,7 @@ import screach.screachsdiscordbot.util.FailedToLoadSettingsException;
 import screach.screachsdiscordbot.util.Settings;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.Status;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.Image;
-import sx.blah.discord.util.RateLimitException;
 
 public class App {
 
@@ -39,7 +35,6 @@ public class App {
 			mListener = new MainListener();
 			bot.getDispatcher().registerListener(mListener);
 			
-			
 
 		} catch (DiscordException e) {
 			e.printStackTrace();
@@ -56,9 +51,5 @@ public class App {
 	}    
 
 	
-	
-	public static void init() {
-		
-	}
 
 }

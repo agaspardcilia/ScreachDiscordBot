@@ -3,7 +3,6 @@ package screach.screachsdiscordbot.handlers.cmd.jukebox;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -339,6 +338,7 @@ public class JukeBoxCmd  implements MessageHandler {
 			audioPlayers.add(result);
 		}
 
+		
 		return result;
 	}
 

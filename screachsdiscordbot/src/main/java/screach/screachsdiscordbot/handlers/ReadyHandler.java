@@ -6,6 +6,10 @@ import screach.screachsdiscordbot.handlers.cmd.InviteCmd;
 import org.apache.commons.io.FilenameUtils;
 
 import screach.screachsdiscordbot.App;
+import screach.screachsdiscordbot.console.MainConsole;
+import screach.screachsdiscordbot.console.cmd.CodecListCmd;
+import screach.screachsdiscordbot.console.cmd.ConsoleHelpCmd;
+import screach.screachsdiscordbot.console.cmd.StopCmd;
 import screach.screachsdiscordbot.handlers.cmd.ChatterBotCmd;
 import screach.screachsdiscordbot.handlers.cmd.RollCmd;
 import screach.screachsdiscordbot.handlers.cmd.jukebox.JukeBoxCmd;
@@ -22,8 +26,12 @@ import sx.blah.discord.util.RateLimitException;
 public class ReadyHandler {
 	private MainListener mListener;
 	
+	private MainConsole mConsole;
+	private Thread mConsoleThread;
+	
 	public ReadyHandler(MainListener listener) {
 		this.mListener = listener;
+		this.mConsole = new MainConsole();
 	}
 	
 	public void setup(ReadyEvent event) {
@@ -34,13 +42,17 @@ public class ReadyHandler {
 		setupBot(bot);
 		setupMessageListeners(bot);
 		setupPresenceListeners();
+		setupMainConsole();
 		
 		status = Status.game(Settings.crtInstance.getValue("botstatus"));
 		bot.changeStatus(status);
-
+		
+		mConsoleThread = new Thread(mConsole);
+		
 		
 		System.out.println("The bot is ready.");
 		
+		mConsoleThread.start();
 	}
 	
 	public void setupBot(IDiscordClient bot) {
@@ -73,6 +85,12 @@ public class ReadyHandler {
 	
 	public void setupPresenceListeners() {
 		mListener.addPresenceUpdateHandler(new RoleManagerHandler());
+	}
+
+	public void setupMainConsole() {
+		mConsole.addCommand(new StopCmd(mConsole));
+		mConsole.addCommand(new CodecListCmd());
+		mConsole.addCommand(new ConsoleHelpCmd(mConsole));
 	}
 	
 	public void setupBotIdentity(IDiscordClient bot) throws RateLimitException, DiscordException {
