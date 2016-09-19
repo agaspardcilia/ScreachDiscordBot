@@ -5,7 +5,6 @@ import screach.screachsdiscordbot.handlers.cmd.InviteCmd;
 
 import org.apache.commons.io.FilenameUtils;
 
-import screach.screachsdiscordbot.App;
 import screach.screachsdiscordbot.console.MainConsole;
 import screach.screachsdiscordbot.console.cmd.CodecListCmd;
 import screach.screachsdiscordbot.console.cmd.ConsoleHelpCmd;
@@ -37,6 +36,8 @@ public class ReadyHandler {
 	public void setup(ReadyEvent event) {
 		Status status;
 		IDiscordClient bot = event.getClient();
+		boolean enableConsole = true;
+		
 		
 		System.out.println("The bot is starting...");
 		setupBot(bot);
@@ -52,7 +53,12 @@ public class ReadyHandler {
 		
 		System.out.println("The bot is ready.");
 		
-		mConsoleThread.start();
+		enableConsole = Boolean.parseBoolean(Settings.crtInstance.getValue("enableconsole"));
+		
+		if(enableConsole)
+			mConsoleThread.start();
+		else
+			System.out.println("Console is disabled.");
 	}
 	
 	public void setupBot(IDiscordClient bot) {

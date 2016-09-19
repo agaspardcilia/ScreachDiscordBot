@@ -61,9 +61,11 @@ public class JsonPlaylist extends ArrayList<String> {
 	}
 	
 	public String toJsonString() {
-		
-		
 		return toJson().toString();
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	@Override

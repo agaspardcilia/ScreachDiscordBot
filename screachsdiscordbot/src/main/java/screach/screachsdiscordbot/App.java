@@ -5,6 +5,7 @@ import screach.screachsdiscordbot.listener.MainListener;
 import screach.screachsdiscordbot.util.Debug;
 import screach.screachsdiscordbot.util.FailedToLoadSettingsException;
 import screach.screachsdiscordbot.util.Settings;
+import screach.screachsdiscordbot.util.ThreadPool;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
@@ -20,6 +21,7 @@ public class App {
 		
 		try {
 			Settings.init();
+			ThreadPool.init();
 			Debug.init();
 			System.out.println("Settings loaded.");
 		} catch (FailedToLoadSettingsException e1) {
