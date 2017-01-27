@@ -2,12 +2,12 @@ package screach.screachsdiscordbot.handlers.cmd;
 
 import java.util.Random;
 
-import screach.screachsdiscordbot.handlers.MessageHandler;
+import screach.screachsdiscordbot.handlers.ActiveMessageHandler;
 import screach.screachsdiscordbot.util.MessageUtils;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.util.MissingPermissionsException;
 
-public class RollCmd implements MessageHandler {
+public class RollCmd implements ActiveMessageHandler {
 	private final static int DEFAULT_MAX = 100;
 
 	private Random rng;

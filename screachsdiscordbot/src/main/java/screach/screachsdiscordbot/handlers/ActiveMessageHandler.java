@@ -2,7 +2,7 @@ package screach.screachsdiscordbot.handlers;
 
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 
-public interface MessageHandler {
+public interface ActiveMessageHandler {
 	
 	public String getName();
 	

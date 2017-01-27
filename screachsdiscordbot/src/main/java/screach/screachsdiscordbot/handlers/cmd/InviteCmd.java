@@ -1,13 +1,13 @@
 package screach.screachsdiscordbot.handlers.cmd;
 
-import screach.screachsdiscordbot.handlers.MessageHandler;
+import screach.screachsdiscordbot.handlers.ActiveMessageHandler;
 import screach.screachsdiscordbot.util.MessageUtils;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.util.BotInviteBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 
-public class InviteCmd implements MessageHandler {
+public class InviteCmd implements ActiveMessageHandler {
 	private IDiscordClient bot;
 	
 	public InviteCmd(IDiscordClient bot) {

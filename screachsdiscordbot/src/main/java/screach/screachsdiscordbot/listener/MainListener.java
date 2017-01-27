@@ -2,50 +2,50 @@ package screach.screachsdiscordbot.listener;
 
 import java.util.ArrayList;
 
-import screach.screachsdiscordbot.handlers.MessageHandler;
+import screach.screachsdiscordbot.handlers.ActiveMessageHandler;
 import screach.screachsdiscordbot.handlers.PresenceUpdateHandler;
 import screach.screachsdiscordbot.handlers.ReadyHandler;
+import screach.screachsdiscordbot.server.Server;
 import screach.screachsdiscordbot.util.Debug;
 import sx.blah.discord.api.events.Event;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
 public class MainListener implements IListener<Event> {
-	private final static char cmdSymbole = '!';
-
-	private ArrayList<MessageHandler> msgHandlers;
-	private ArrayList<PresenceUpdateHandler> precenseHandlers;
+	private ArrayList<Server> servers = new ArrayList<>();
 	private ReadyHandler readyHandler;
 	
+	
 	public MainListener() {
-		msgHandlers = new ArrayList<>();
-		precenseHandlers = new ArrayList<>();
+		servers = new ArrayList<>();
 		readyHandler = new ReadyHandler(this);
 	}
 
-
-	public void addMessageHandler(MessageHandler mh) {
-		msgHandlers.add(mh);
-	}
-	
-	public void addPresenceUpdateHandler(PresenceUpdateHandler h) {
-		precenseHandlers.add(h);
-	}
-
+	@SuppressWarnings("deprecation")
 	public void handle(Event event) {
 		try {
-			if (event instanceof MessageReceivedEvent)
-				handleMessage((MessageReceivedEvent) event);
-			else if (event instanceof ReadyEvent)
+			Server server;
+			if (event instanceof MessageReceivedEvent) { //Message
+				MessageReceivedEvent me = (MessageReceivedEvent) event;
+				
+				server = getServer(me.getMessage().getGuild());
+				server.handleMessageEvent(me);
+			} else if (event instanceof PresenceUpdateEvent) { //Presence
+				PresenceUpdateEvent pue = (PresenceUpdateEvent) event;
+				//TODO make sure it won't miss important events
+				server = getServer(pue.getGuild()); //supposed to be unreliable but fuck it, should do the trick.
+				
+				server.handlePresence(pue);
+			} else if (event instanceof ReadyEvent) { //Ready
 				readyHandler.setup((ReadyEvent) event);
-			else if (event instanceof PresenceUpdateEvent)
-				handlePresence((PresenceUpdateEvent) event);
+			}
 //			else
 //				Debug.println("Unhandled event :" + event.toString());
 				
@@ -58,57 +58,19 @@ public class MainListener implements IListener<Event> {
 		}
 	}
 
-	private void handleMessage(MessageReceivedEvent event) throws RateLimitException, MissingPermissionsException, DiscordException {
-		IMessage message;
-		String content;
-		String[] args;
-
-		message = event.getMessage();
-
-		content = message.getContent();
-
-		if (isCommand(content)) {
-			args = content.split(" ");
-
-
-			if (args.length > 0) {
-				String command = args[0];
-
-
-				for (MessageHandler mh : msgHandlers) {
-					if (command.toUpperCase().equals("!" + mh.getCommand().toUpperCase())) {
-						mh.handleMessage(event, args);
-						return;
-					}
-
-				}
-
-				answerMessageError(event, "Unknown command : \"" + command + "\"");
-
-			} else { //invalid command line
-				answerMessageError(event, "Invalid command line");
+	private Server getServer(IGuild guild) {
+		for (Server server : servers) {
+			if (server.getGuild().getID().equals(guild.getID())) {
+				return server;
 			}
-
 		}
-
-	}
-
-	private void handlePresence(PresenceUpdateEvent event) {
-		for (PresenceUpdateHandler presenceChangeHandler : precenseHandlers) {
-			presenceChangeHandler.handle(event);
-		}
+		//TODO implement new server creation.
+		return null;
 	}
 	
-	public static boolean isCommand(String text) {
-		return text.charAt(0) == cmdSymbole;
-	}
 
 	public static void answerMessageError(MessageReceivedEvent event, String notice) throws RateLimitException, MissingPermissionsException, DiscordException {
 		event.getMessage().getChannel().sendMessage(notice);
 	}
 
-	public ArrayList<MessageHandler> getMsgHandlers() {
-		return msgHandlers;
-	}
-	
 }

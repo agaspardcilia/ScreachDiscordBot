@@ -1,12 +1,12 @@
 package screach.screachsdiscordbot.handlers.cmd;
 
-import screach.screachsdiscordbot.handlers.MessageHandler;
+import screach.screachsdiscordbot.handlers.ActiveMessageHandler;
 import screach.screachsdiscordbot.listener.MainListener;
 import screach.screachsdiscordbot.util.MessageUtils;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.util.MissingPermissionsException;
 
-public class HelpCmd implements MessageHandler {
+public class HelpCmd implements ActiveMessageHandler {
 	private MainListener ml;
 	
 	public HelpCmd(MainListener ml) {
@@ -34,7 +34,7 @@ public class HelpCmd implements MessageHandler {
 		String result = "__**Help**__\n";
 		result += "<argument> : required, [argument] : optionnal\n\n";
 		
-		for (MessageHandler mh : ml.getMsgHandlers()) {
+		for (ActiveMessageHandler mh : ml.getMsgHandlers()) {
 			result += "**" + mh.getUsage() + "** : " + mh.getDescription() + "\n";
 		}
 		

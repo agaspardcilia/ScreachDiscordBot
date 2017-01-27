@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import screach.screachsdiscordbot.handlers.MessageHandler;
+import screach.screachsdiscordbot.handlers.ActiveMessageHandler;
 import screach.screachsdiscordbot.util.MessageUtils;
 import screach.screachsdiscordbot.util.Settings;
 import sx.blah.discord.api.IDiscordClient;
@@ -12,7 +12,7 @@ import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.util.MissingPermissionsException;
 
-public class JukeBoxCmd  implements MessageHandler {
+public class JukeBoxCmd  implements ActiveMessageHandler {
 	//Arbitrary list, not all actually supported formats are listed/
 	public final static String[] SUPPPORTED_FORMAT = {"mp3", "ogg"};
 

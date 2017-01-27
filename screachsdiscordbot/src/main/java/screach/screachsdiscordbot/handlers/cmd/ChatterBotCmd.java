@@ -7,13 +7,13 @@ import com.google.code.chatterbotapi.ChatterBotFactory;
 import com.google.code.chatterbotapi.ChatterBotSession;
 import com.google.code.chatterbotapi.ChatterBotType;
 
-import screach.screachsdiscordbot.handlers.MessageHandler;
+import screach.screachsdiscordbot.handlers.ActiveMessageHandler;
 import screach.screachsdiscordbot.util.MessageUtils;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.MissingPermissionsException;
 
-public class ChatterBotCmd implements MessageHandler {
+public class ChatterBotCmd implements ActiveMessageHandler {
 	private HashMap<IChannel, ChatterBotSession> sessions;
 	
 	public ChatterBotCmd() {
